@@ -1,0 +1,29 @@
+name: Terraform CI
+
+on:
+  pull_request:
+    branches:
+      - main  # Runs CI on any pull request targeting the main branch
+
+jobs:
+  terraform:
+    name: Terraform Validation
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0  # Specify your Terraform version
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Check Terraform Formatting
+        run: terraform fmt -recursive -check
+
+      - name: Validate Terraform Configuration
+        run: terraform validate
