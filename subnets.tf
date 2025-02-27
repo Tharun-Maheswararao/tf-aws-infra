@@ -9,9 +9,10 @@ resource "aws_subnet" "public_subnets" {
     ]
   ]) : "${pair.vpc_key}-${pair.index}" => pair }
 
-  vpc_id            = aws_vpc.main[each.value.vpc_key].id
-  cidr_block        = each.value.cidr
-  availability_zone = var.availability_zones[each.value.index % length(var.availability_zones)]
+  vpc_id                  = aws_vpc.main[each.value.vpc_key].id
+  cidr_block              = each.value.cidr
+  availability_zone       = var.availability_zones[each.value.index % length(var.availability_zones)]
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "tf-public-subnet-${each.value.vpc_key}-${each.value.index + 1}"
