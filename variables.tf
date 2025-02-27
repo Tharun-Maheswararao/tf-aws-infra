@@ -13,6 +13,11 @@ variable "availability_zones" {
   type        = list(string)
 }
 
+variable "new_ami" {
+  description = "AWS new AMI"
+  type        = string
+}
+
 variable "vpcs" {
   description = "List of VPCs with their CIDRs and subnet structures"
   type = map(object({
