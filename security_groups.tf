@@ -1,7 +1,7 @@
 resource "aws_security_group" "application_sg" {
   name        = "application-security-group"
   description = "Allow web and SSH access"
-  vpc_id      = aws_vpc.main["vpc1"].id  # Choose your VPC (e.g., vpc1)
+  vpc_id      = aws_vpc.main["vpc1"].id # Choose your VPC (e.g., vpc1)
 
   ingress {
     description = "SSH Access"
@@ -29,7 +29,7 @@ resource "aws_security_group" "application_sg" {
 
   ingress {
     description = "Application Port"
-    from_port   = 8080  # Flask app default port (modify as required)
+    from_port   = 8080 # Flask app default port (modify as required)
     to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]

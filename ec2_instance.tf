@@ -1,8 +1,8 @@
 resource "aws_instance" "webapp_instance" {
-  ami                    = "ami-0882b9f726d2d56cc"  # Replace with your custom AMI ID from Packer
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.public_subnets["vpc1-0"].id  # Use a public subnet from your VPC
-  vpc_security_group_ids = [aws_security_group.application_sg.id]
+  ami                         = "ami-0882b9f726d2d56cc" # Replace with your custom AMI ID from Packer
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.public_subnets["vpc1-0"].id # Use a public subnet from your VPC
+  vpc_security_group_ids      = [aws_security_group.application_sg.id]
   associate_public_ip_address = true
 
   root_block_device {
