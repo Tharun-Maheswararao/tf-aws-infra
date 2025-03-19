@@ -36,10 +36,10 @@ resource "aws_security_group" "application_sg" {
   }
 
   ingress {
-    description = "Allow MySQL from EC2"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
+    description     = "Allow MySQL from EC2"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
     security_groups = [aws_security_group.application_sg.id] # Allow EC2 access to RDS
   }
 
