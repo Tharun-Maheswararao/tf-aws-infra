@@ -18,6 +18,26 @@ variable "new_ami" {
   type        = string
 }
 
+variable "db_username" {
+  description = "Database User"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Database Password"
+  type        = string
+}
+
+variable "db_name" {
+  description = "Database Name"
+  type        = string
+}
+
+variable "environment" {
+  description = "The environment name (e.g., dev, prod)"
+  type        = string
+}
+
 variable "vpcs" {
   description = "List of VPCs with their CIDRs and subnet structures"
   type = map(object({
