@@ -38,6 +38,11 @@ variable "environment" {
   type        = string
 }
 
+variable "aws_account_id" {
+  description = "AWS ACCOUNT ID"
+  type        = string
+}
+
 variable "vpcs" {
   description = "List of VPCs with their CIDRs and subnet structures"
   type = map(object({
