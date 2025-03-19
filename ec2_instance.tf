@@ -21,16 +21,19 @@ resource "aws_instance" "webapp_instance" {
               sudo apt update -y
 
               echo "Fetching Database and S3 details from AWS SSM..."
-              DB_HOST=$(aws ssm get-parameter --name /webapp/rds_endpoint --query "Parameter.Value" --output text --region us-east-1)
-              S3_BUCKET=$(aws ssm get-parameter --name /webapp/s3_bucket --query "Parameter.Value" --output text --region us-east-1)
+              DB_HOST=${aws_db_instance.db_instance.address}
+              S3_BUCKET=${aws_s3_bucket.uploads.bucket}
 
               echo "Updating app.config..."
-              cat <<EOT > /home/ubuntu/webapp/app.config
+              cat <<EOT | sudo tee /opt/webapp/app/app.config > /dev/null
               [DATABASE]
+              DB_CONNECTION=mysql
+              DB_HOST=$DB_HOST
+              DB_PORT=3306
+              DB_NAME=${var.db_name}
               DB_USERNAME=${var.db_username}
               DB_PASSWORD=${var.db_password}
-              DB_HOST=$DB_HOST
-              DB_NAME=${var.db_name}
+              
 
               [S3]
               S3_BUCKET=$S3_BUCKET
