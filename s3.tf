@@ -1,6 +1,6 @@
 # S3 Bucket
 resource "aws_s3_bucket" "uploads" {
-  bucket = uuid()
+  bucket        = uuid()
   force_destroy = true
 }
 
