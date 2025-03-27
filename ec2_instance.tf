@@ -47,6 +47,16 @@ resource "aws_instance" "webapp_instance" {
               echo "Checking service status..."
               sudo systemctl status webapp --no-pager
 
+              echo "Configuring CloudWatch Agent..."
+              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+                -a fetch-config \
+                -m ec2 \
+                -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json \
+                -s
+
+              echo "Checking CloudWatch Agent status..."
+              sudo systemctl status amazon-cloudwatch-agent --no-pager
+
               echo "Setup completed!"
             EOF
 
