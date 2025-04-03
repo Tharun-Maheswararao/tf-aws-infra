@@ -43,6 +43,26 @@ variable "aws_account_id" {
   type        = string
 }
 
+variable "route53_zone_id" {
+  description = "Route 53 Zone ID"
+  type        = string
+}
+
+variable "domain_name" {
+  description = "Domain Name"
+  type        = string
+}
+
+variable "subdomain" {
+  description = "Subdomain"
+  type        = string
+}
+
+variable "key_name" {
+  description = "Key Name"
+  type        = string
+}
+
 variable "vpcs" {
   description = "List of VPCs with their CIDRs and subnet structures"
   type = map(object({
