@@ -105,3 +105,30 @@ resource "aws_iam_role_policy_attachment" "attach_cloudwatch_policy" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = aws_iam_policy.cloudwatch_policy.arn
 }
+
+# IAM Policy for Auto-Scaling and Load Balancer Access
+resource "aws_iam_policy" "autoscaling_lb_policy" {
+  name        = "autoscaling-lb-policy-for-webapp"
+  description = "Allows EC2 instances to register with the load balancer and auto-scaling"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "autoscaling:Describe*",
+          "autoscaling:CompleteLifecycleAction",
+          "elasticloadbalancing:Describe*",
+          "elasticloadbalancing:RegisterTargets",
+          "elasticloadbalancing:DeregisterTargets"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attach_autoscaling_lb_policy" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.autoscaling_lb_policy.arn
+}
