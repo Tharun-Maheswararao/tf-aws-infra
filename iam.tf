@@ -26,6 +26,18 @@ resource "aws_iam_policy" "s3_rds_policy" {
         Effect   = "Allow",
         Action   = ["rds:*"],
         Resource = "*"
+      },
+      {
+        Effect   = "Allow",
+        Action   = ["kms:*"],
+        Resource = "*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource" : "arn:aws:secretsmanager:us-east-1:241533141323:secret:db-password-temp-2-*"
       }
     ]
   })
@@ -37,7 +49,7 @@ resource "aws_iam_role_policy_attachment" "attach_policy" {
 }
 
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "ec2_profile"
+  name = "${var.environment}-instance-profile"
   role = aws_iam_role.ec2_role.name
 }
 

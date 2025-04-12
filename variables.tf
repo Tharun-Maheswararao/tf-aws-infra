@@ -71,3 +71,23 @@ variable "vpcs" {
     private_subnet_cidrs = list(string)
   }))
 }
+
+variable "profile_hosted_zone_id" {
+  description = "Route 53 hosted zone ID for the current profile"
+  type        = string
+}
+
+variable "profile_domain_name" {
+  description = "Domain name for the current profile"
+  type        = string
+}
+
+variable "root_hosted_zone_id" {
+  description = "Route 53 hosted zone ID for the root domain."
+  type        = string
+}
+
+variable "root_domain_name" {
+  description = "Root domain name."
+  type        = string
+}
