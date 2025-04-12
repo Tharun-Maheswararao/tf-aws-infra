@@ -58,4 +58,6 @@ resource "aws_db_instance" "db_instance" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   parameter_group_name   = aws_db_parameter_group.custom_rds_pg.name
   skip_final_snapshot    = true
+  storage_encrypted      = true
+  kms_key_id             = aws_kms_key.rds_key.arn
 }

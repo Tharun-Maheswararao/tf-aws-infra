@@ -119,6 +119,12 @@ resource "aws_lb_target_group" "webapp_tg" {
   }
 }
 
+data "aws_acm_certificate" "dev_cert" {
+  domain      = "dev.tharunmaheswararao.me"
+  statuses    = ["ISSUED"]
+  most_recent = true
+}
+
 # Listener (HTTP on port 80)
 resource "aws_lb_listener" "webapp_listener" {
   load_balancer_arn = aws_lb.webapp_lb.arn
@@ -134,9 +140,9 @@ resource "aws_lb_listener" "webapp_listener" {
 # Auto-Scaling Group
 resource "aws_autoscaling_group" "webapp_asg" {
   name                = "csye6225-asg"
-  min_size            = 3
-  max_size            = 5
-  desired_capacity    = 3
+  min_size            = 1
+  max_size            = 3
+  desired_capacity    = 1
   vpc_zone_identifier = [for k, s in aws_subnet.public_subnets : s.id]
   target_group_arns   = [aws_lb_target_group.webapp_tg["vpc1"].arn]
 

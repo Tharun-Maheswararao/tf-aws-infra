@@ -20,6 +20,8 @@ resource "aws_launch_template" "webapp_lt" {
       volume_size           = 25
       volume_type           = "gp2"
       delete_on_termination = true
+      encrypted             = true
+      kms_key_id            = aws_kms_key.ec2_key.arn
     }
   }
 
@@ -30,6 +32,18 @@ resource "aws_launch_template" "webapp_lt" {
 
     echo "Updating instance..."
     sudo apt update -y
+
+    # Install AWS CLI if not already installed
+              if ! command -v aws &> /dev/null; then
+                echo "Installing AWS CLI..."
+                sudo apt-get update
+                sudo apt-get install -y unzip curl
+                curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                unzip awscliv2.zip
+                sudo ./aws/install
+                rm -rf aws awscliv2.zip
+              fi
+
 
     echo "Fetching Database and S3 details from AWS SSM..."
     DB_HOST=${aws_db_instance.db_instance.address}
@@ -43,7 +57,11 @@ resource "aws_launch_template" "webapp_lt" {
     DB_PORT=3306
     DB_NAME=${var.db_name}
     DB_USERNAME=${var.db_username}
-    DB_PASSWORD=${var.db_password}
+    DB_PASSWORD=$(aws secretsmanager get-secret-value \
+    --secret-id db-password-temp-2 \
+    --query SecretString \
+    --output text \
+    --region us-east-1)
 
     [S3]
     S3_BUCKET=$S3_BUCKET
