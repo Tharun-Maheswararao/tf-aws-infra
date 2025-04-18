@@ -58,10 +58,10 @@ variable "subdomain" {
   type        = string
 }
 
-variable "key_name" {
-  description = "Key Name"
-  type        = string
-}
+# variable "key_name" {
+#   description = "Key Name"
+#   type        = string
+# }
 
 variable "vpcs" {
   description = "List of VPCs with their CIDRs and subnet structures"
@@ -82,12 +82,12 @@ variable "profile_domain_name" {
   type        = string
 }
 
-variable "root_hosted_zone_id" {
-  description = "Route 53 hosted zone ID for the root domain."
-  type        = string
-}
+# variable "root_hosted_zone_id" {
+#   description = "Route 53 hosted zone ID for the root domain."
+#   type        = string
+# }
 
-variable "root_domain_name" {
-  description = "Root domain name."
-  type        = string
-}
+# variable "root_domain_name" {
+#   description = "Root domain name."
+#   type        = string
+# }

@@ -37,7 +37,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "db_password_value" {
-  secret_id     = aws_secretsmanager_secret.db_password.id
-  secret_string = random_password.db_password.result
-}
+# resource "aws_secretsmanager_secret_version" "db_password_value" {
+#   secret_id     = aws_secretsmanager_secret.db_password.id
+#   secret_string = random_password.db_password.result
+# }
