@@ -20,14 +20,6 @@ resource "aws_security_group" "application_sg" {
   }
 
   ingress {
-    description = "HTTPS Access"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
     description = "Application Port"
     from_port   = 8080 # Flask app default port (modify as required)
     to_port     = 8080
@@ -61,12 +53,12 @@ resource "aws_security_group" "load_balancer_sg" {
   description = "Security group for the load balancer"
   for_each    = var.vpcs
   vpc_id      = aws_vpc.main[each.key].id
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # ingress {
+  #   from_port   = 80
+  #   to_port     = 80
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 
   ingress {
     from_port   = 443
@@ -105,8 +97,8 @@ resource "aws_lb_target_group" "webapp_tg" {
   name     = "webapp-tg"
   port     = 8080
   protocol = "HTTP"
-  for_each = var.vpcs
-  vpc_id   = aws_vpc.main[each.key].id
+  # for_each = var.vpcs
+  vpc_id = aws_vpc.main["vpc1"].id
 
   health_check {
     path                = "/healthz"
@@ -120,31 +112,44 @@ resource "aws_lb_target_group" "webapp_tg" {
 }
 
 data "aws_acm_certificate" "dev_cert" {
-  domain      = "dev.tharunmaheswararao.me"
+  domain      = "${var.subdomain}.${var.domain_name}"
   statuses    = ["ISSUED"]
   most_recent = true
 }
 
 # Listener (HTTP on port 80)
-resource "aws_lb_listener" "webapp_listener" {
+# resource "aws_lb_listener" "webapp_listener" {
+#   load_balancer_arn = aws_lb.webapp_lb.arn
+#   port              = 80
+#   protocol          = "HTTP"
+
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.webapp_tg["vpc1"].arn
+#   }
+# }
+
+resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.webapp_lb.arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.aws_profile == "a4githubactions" ? aws_acm_certificate.dev_cert[0].arn : data.aws_acm_certificate.imported_cert[0].arn
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.webapp_tg["vpc1"].arn
+    target_group_arn = aws_lb_target_group.webapp_tg.arn
   }
 }
 
 # Auto-Scaling Group
 resource "aws_autoscaling_group" "webapp_asg" {
   name                = "csye6225-asg"
-  min_size            = 1
-  max_size            = 3
-  desired_capacity    = 1
+  min_size            = 3
+  max_size            = 5
+  desired_capacity    = 3
   vpc_zone_identifier = [for k, s in aws_subnet.public_subnets : s.id]
-  target_group_arns   = [aws_lb_target_group.webapp_tg["vpc1"].arn]
+  target_group_arns   = [aws_lb_target_group.webapp_tg.arn]
 
   launch_template {
     id      = aws_launch_template.webapp_lt.id
@@ -160,6 +165,9 @@ resource "aws_autoscaling_group" "webapp_asg" {
     value               = "tf-aws-web-app"
     propagate_at_launch = true
   }
+
+  # Add explicit dependency
+  depends_on = [aws_launch_template.webapp_lt]
 }
 
 # Scaling Policies

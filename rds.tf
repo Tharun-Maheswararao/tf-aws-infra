@@ -10,6 +10,13 @@ resource "aws_security_group" "rds_sg" {
     protocol        = "tcp"
     security_groups = [aws_security_group.application_sg.id]
   }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 # RDS Subnet Group (Dynamically Fetch Private Subnets)
@@ -28,14 +35,27 @@ resource "aws_db_parameter_group" "custom_rds_pg" {
   name   = "custom-rds-parameter-group"
   family = "mysql8.0" # Change based on DB engine (e.g., "postgres15", "mariadb10.6")
 
+  # parameter {
+  #   name  = "max_connections"
+  #   value = "200"
+  # }
+
+  # parameter {
+  #   name  = "log_bin_trust_function_creators"
+  #   value = "1"
+  # }
+
+  # Define custom parameters 
   parameter {
-    name  = "max_connections"
-    value = "200"
+    name         = "slow_query_log"
+    value        = "1"
+    apply_method = "immediate"
   }
 
   parameter {
-    name  = "log_bin_trust_function_creators"
-    value = "1"
+    name         = "long_query_time"
+    value        = "2"
+    apply_method = "immediate"
   }
 
   tags = {
@@ -52,7 +72,7 @@ resource "aws_db_instance" "db_instance" {
   identifier             = "csye6225"
   db_name                = var.db_name
   username               = var.db_username
-  password               = var.db_password
+  password               = random_password.rds_password.result
   publicly_accessible    = false
   db_subnet_group_name   = aws_db_subnet_group.db_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
@@ -60,4 +80,14 @@ resource "aws_db_instance" "db_instance" {
   skip_final_snapshot    = true
   storage_encrypted      = true
   kms_key_id             = aws_kms_key.rds_key.arn
+
+  # Add explicit dependency to ensure KMS key is fully created
+  depends_on = [
+    aws_kms_key.rds_key,
+    aws_secretsmanager_secret_version.rds_password_version
+  ]
+
+  tags = {
+    Name = "tf-rds-instance"
+  }
 }

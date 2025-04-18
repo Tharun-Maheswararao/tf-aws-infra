@@ -18,6 +18,6 @@ output "s3_bucket" {
   value = aws_s3_bucket.uploads.bucket
 }
 
-output "ec2_iam_role" {
-  value = aws_iam_role.ec2_cloudwatch_role.name
-}
+# output "ec2_iam_role" {
+#   value = aws_iam_role.ec2_cloudwatch_role.name
+# }

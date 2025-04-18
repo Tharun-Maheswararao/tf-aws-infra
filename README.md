@@ -34,3 +34,17 @@ Required ```.tfvar``` Variables 📝
 For the Terraform scripts to work, ensure you have a ```.tfvar``` file.
 
 Create your own ```tfvars``` file.
+
+## SSL Certificate for demo Environment
+
+
+### Importing the Certificate into AWS Certificate Manager (ACM)
+The certificate was imported into ACM using the following command:
+
+```bash
+aws acm import-certificate \
+  --certificate fileb://file_name.crt \
+  --private-key fileb://demo.domainname.me.key \
+  --certificate-chain fileb://filename.ca-bundle \
+  --region us-east-1 \
+  --profile demo
